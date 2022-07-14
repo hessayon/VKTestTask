@@ -2,7 +2,7 @@
 Test task for summer bootcamp on  iOS-development.
 
 ### Task
-Develop an  that shows information about VK services. By clicking on one of the services, either its website or mobile application opens, if it is installed.
+Develop an app that shows information about VK services. By clicking on one of the services, either its website or mobile application opens, if it is installed.
 
 ### Example screenshoot
 
