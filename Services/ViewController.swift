@@ -52,9 +52,18 @@ extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         if let url = URL(string: models[indexPath.row].link) {
-            let vc = SFSafariViewController(url: url)
-            self.present(vc, animated: true, completion: nil)
+
+            if UIApplication.shared.canOpenURL(url)
+            {
+                UIApplication.shared.open(url)
+            } else {
+                let alert = UIAlertController(title: "Ошибка", message: "Не удалось открыть информацию о сервисе", preferredStyle: .alert)
+                DispatchQueue.main.async {
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
         }
+
         
         
     }
@@ -91,7 +100,10 @@ extension ViewController: ServiceManagerDelegate{
     }
     
     func didFailWithError(error: Error) {
-        print(error)
+        let alert = UIAlertController(title: "Ошибка", message: "Не удалось загрузить список сервисов", preferredStyle: .alert)
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     
