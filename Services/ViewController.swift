@@ -6,14 +6,93 @@
 //
 
 import UIKit
+import WebKit
+import SafariServices
+
+
+struct Section {
+    let title: String
+    let services: [Service]
+}
+
+
 
 class ViewController: UIViewController {
+    
+    
+    let tableView: UITableView = {
+        let table = UITableView(frame: .zero, style: .grouped)
+        table.register(ServicesTableCell.self, forCellReuseIdentifier: ServicesTableCell.identifier)
+        return table
+    }()
+    
+    
+    var models = [Service]()
+    
+    var serviceManager = ServiceManager()
+
+    
+    override func viewWillAppear(_ animated: Bool) {
+        serviceManager.fetchServices()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        serviceManager.delegate = self
+        view.addSubview(tableView)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.frame = view.bounds
+        
     }
-
-
+    
 }
 
+extension ViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        if let url = URL(string: models[indexPath.row].link) {
+            let vc = SFSafariViewController(url: url)
+            self.present(vc, animated: true, completion: nil)
+        }
+        
+        
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 90
+    }
+    
+}
+
+extension ViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return models.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
+        let settingsOption = models[indexPath.row]
+        guard  let cell = tableView.dequeueReusableCell(
+            withIdentifier: ServicesTableCell.identifier,
+            for: indexPath
+        ) as? ServicesTableCell else {
+                return UITableViewCell()
+            }
+        cell.configure(with: settingsOption)
+        return cell
+    }
+}
+
+extension ViewController: ServiceManagerDelegate{
+    func didLoadServices(services: [Service]) {
+        models = services
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    func didFailWithError(error: Error) {
+        print(error)
+    }
+    
+    
+}
