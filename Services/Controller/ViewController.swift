@@ -50,7 +50,7 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+        tableView.deselectRow(at: indexPath, animated: true)
         if let url = URL(string: models[indexPath.row].link) {
 
             if UIApplication.shared.canOpenURL(url)
